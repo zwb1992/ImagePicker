@@ -16,6 +16,7 @@
         android:id="@+id/ll_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#000"
         android:orientation="horizontal">
 
         <TextView
@@ -24,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="10dp"
+            android:textColor="#fff"
             tools:text="sd/0/images" />
 
         <TextView
@@ -31,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:textColor="#fff"
             tools:text="5张" />
     </LinearLayout>
 </LinearLayout>
