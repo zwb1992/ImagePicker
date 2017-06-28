@@ -23,6 +23,7 @@ import java.util.List;
 public class PhotoDirAdapter extends RecyclerView.Adapter<PhotoDirHolder> {
     private List<FolderBean> mFolders;
     private Context mContext;
+    private OnItemClick onItemClick;
 
     public PhotoDirAdapter(List<FolderBean> mFolders, Context mContext) {
         this.mFolders = mFolders;
@@ -38,9 +39,9 @@ public class PhotoDirAdapter extends RecyclerView.Adapter<PhotoDirHolder> {
     public void onBindViewHolder(PhotoDirHolder holder, int position) {
         FolderBean folderBean = mFolders.get(position);
         String path = folderBean.getFirstImagePath();
-        Log.e("TAG", "==adapter=====path====" + path);
+//        Log.e("TAG", "==adapter=====path====" + path);
         holder.tvName.setText(folderBean.getName());
-        holder.tvCount.setText(folderBean.getCount()+" 张");
+        holder.tvCount.setText(folderBean.getCount() + " 张");
         Glide.with(mContext).load(path)
                 .placeholder(R.mipmap.photo_no).error(R.mipmap.photo_no).into(holder.mPhoto);
         holder.mView.setTag(position + "");
@@ -48,7 +49,10 @@ public class PhotoDirAdapter extends RecyclerView.Adapter<PhotoDirHolder> {
             @Override
             public void onClick(View v) {
                 int index = Integer.parseInt(v.getTag().toString());
-                Toast.makeText(mContext, "---" + index, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "---" + index, Toast.LENGTH_SHORT).show();
+                if (onItemClick != null) {
+                    onItemClick.onItemSelected(mFolders.get(index));
+                }
             }
         });
     }
@@ -56,5 +60,17 @@ public class PhotoDirAdapter extends RecyclerView.Adapter<PhotoDirHolder> {
     @Override
     public int getItemCount() {
         return mFolders.size();
+    }
+
+    public OnItemClick getOnItemClick() {
+        return onItemClick;
+    }
+
+    public void setOnItemClick(OnItemClick onItemClick) {
+        this.onItemClick = onItemClick;
+    }
+
+    public interface OnItemClick {
+        void onItemSelected(FolderBean folderBean);
     }
 }

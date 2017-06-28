@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -77,13 +76,12 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        Toast.makeText(this, "底部按钮", Toast.LENGTH_SHORT).show();
-        if(dirListPopWindow != null){
+        if (dirListPopWindow != null) {
             Log.e("TAG", "===isShowing====" + dirListPopWindow.isShowing());
-            dirListPopWindow.showAsDropDown(llBottom, 0, 0);
-            if(!dirListPopWindow.isShowing()) {
+            if (!dirListPopWindow.isShowing()) {
+                dirListPopWindow.showAsDropDown(llBottom, 0, 0);
                 lightOff();
-            }else {
+            } else {
                 dirListPopWindow.dismiss();
             }
         }
@@ -122,6 +120,15 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onDismiss() {
                 lightOn();
+            }
+        });
+        dirListPopWindow.setOnItemClick(new PhotoDirListPopWindow.OnItemClick() {
+            @Override
+            public void onItemSelected(FolderBean folderBean) {
+                adapter = new PhotoSelectAdapter(folderBean, ImageSelectorActivity.this);
+                recyclerView.setAdapter(adapter);
+                tvDirName.setText(folderBean.getName());
+                tvDirCount.setText(folderBean.getCount() + " 张");
             }
         });
     }
@@ -165,12 +172,12 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
                 Cursor cursor = mContentResolver.query(mImageUri, null, MediaStore.Images.Media.MIME_TYPE + "=? or "
                                 + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
                         new String[]{"image/jpeg", "image/png", "image/jpg"}, MediaStore.Images.Media.DATE_MODIFIED);
-                Log.e("TAG", "===count====" + cursor.getCount());
+//                Log.e("TAG", "===count====" + cursor.getCount());
                 FolderBean folderBean;
                 while (cursor.moveToNext()) {
                     //获取图片的路径
                     String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                    Log.e("TAG", "===path====" + path);
+//                    Log.e("TAG", "===path====" + path);
                     //获取该图片的父路径
                     File parentFile = new File(path).getParentFile();
                     if (parentFile == null) {
@@ -189,7 +196,8 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
                     String[] imgs = parentFile.list(new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
-                            if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png")) {
+                            if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png")
+                                    || name.endsWith(".JPG") || name.endsWith(".JPEG") || name.endsWith(".PNG")) {
                                 return true;
                             }
                             return false;
