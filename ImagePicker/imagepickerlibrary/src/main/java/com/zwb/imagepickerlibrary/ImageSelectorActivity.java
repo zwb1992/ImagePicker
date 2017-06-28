@@ -163,8 +163,7 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
         dirListPopWindow.setOnItemClick(new PhotoDirListPopWindow.OnItemClick() {
             @Override
             public void onItemSelected(FolderBean folderBean) {
-                adapter = new PhotoSelectAdapter(folderBean, ImageSelectorActivity.this);
-                recyclerView.setAdapter(adapter);
+                initAdapter(folderBean);
                 tvDirName.setText(folderBean.getName());
                 tvDirCount.setText(folderBean.getCount() + " 张");
             }

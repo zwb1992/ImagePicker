@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA && resultCode == RESULT_OK) {
-            String path = pickerHelper.getPhotoPath(requestCode, resultCode, data);
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
             img.setImageBitmap(bitmap);
         }
     }
