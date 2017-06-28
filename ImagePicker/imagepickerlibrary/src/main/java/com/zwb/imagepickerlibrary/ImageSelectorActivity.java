@@ -2,13 +2,17 @@ package com.zwb.imagepickerlibrary;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 import com.zwb.imagepickerlibrary.adapter.DividerGridItemDecoration;
 import com.zwb.imagepickerlibrary.adapter.PhotoSelectAdapter;
 import com.zwb.imagepickerlibrary.bean.FolderBean;
+import com.zwb.imagepickerlibrary.help.SelectType;
 import com.zwb.imagepickerlibrary.utils.PhotoDirListPopWindow;
 
 import java.io.File;
@@ -40,7 +45,8 @@ import java.util.Set;
  * 从相册选择图片
  */
 public class ImageSelectorActivity extends AppCompatActivity implements View.OnClickListener {
-
+    public static final String SELECT_TYPE = "SelectType";
+    public static final String PHOTO_PATH = "photo_path";
     private RecyclerView recyclerView;
     private TextView tvDirName;
     private TextView tvDirCount;
@@ -52,13 +58,28 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
     private PhotoDirListPopWindow dirListPopWindow;
     private float mScreenHeight;
 
+    private SelectType mSelectType;//单选还是多选
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_selector);
+        createSelectType();
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
         initView();
         getImages();
+    }
+
+    /**
+     * 防止未设置单选还是多选
+     */
+    private void createSelectType() {
+        Object object = getIntent().getSerializableExtra(SELECT_TYPE);
+        if (object == null) {
+            mSelectType = SelectType.SINGLE;
+        } else {
+            mSelectType = (SelectType) object;
+        }
     }
 
     private void initView() {
@@ -68,9 +89,27 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
         llBottom = (LinearLayout) findViewById(R.id.ll_bottom);
         llBottom.setOnClickListener(this);
 
-        adapter = new PhotoSelectAdapter(null, this);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
+        initAdapter(null);
+    }
+
+    private void initAdapter(FolderBean folderBean) {
+        adapter = new PhotoSelectAdapter(folderBean, this, mSelectType);
+        adapter.setOnItemClick(new PhotoSelectAdapter.OnItemClick() {
+            @Override
+            public void onItemClick(String dir, @NonNull List<String> photos, SelectType selectType) {
+                Intent intent = new Intent();
+                if (selectType == SelectType.SINGLE) {
+                    if (!photos.isEmpty()) {
+                        String path = photos.get(0);
+                        intent.putExtra(PHOTO_PATH, dir + File.separator + path);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                }
+            }
+        });
         recyclerView.setAdapter(adapter);
     }
 
@@ -103,8 +142,7 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
             return;
         }
         FolderBean folderBean = mFolders.get(0);
-        adapter = new PhotoSelectAdapter(folderBean, this);
-        recyclerView.setAdapter(adapter);
+        initAdapter(folderBean);
         tvDirName.setText(folderBean.getName());
         tvDirCount.setText(folderBean.getCount() + " 张");
     }
