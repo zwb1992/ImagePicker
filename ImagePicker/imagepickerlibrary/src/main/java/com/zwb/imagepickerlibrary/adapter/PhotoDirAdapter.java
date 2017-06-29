@@ -38,8 +38,12 @@ public class PhotoDirAdapter extends RecyclerView.Adapter<PhotoDirHolder> {
         String path = folderBean.getFirstImagePath();
         holder.tvName.setText(folderBean.getName());
         holder.tvCount.setText(folderBean.getCount() + " 张");
-        Glide.with(mContext).load(path)
-                .placeholder(R.mipmap.photo_no).error(R.mipmap.photo_no).into(holder.mPhoto);
+        Glide.with(mContext)
+                .load(path)
+                .placeholder(R.mipmap.photo_no)
+                .error(R.mipmap.photo_no)
+                .dontAnimate()
+                .into(holder.mPhoto);
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

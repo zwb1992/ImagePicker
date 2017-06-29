@@ -49,8 +49,12 @@ public class PhotoSelectAdapter extends RecyclerView.Adapter<PhotoSelectHolder> 
     public void onBindViewHolder(final PhotoSelectHolder holder, final int position) {
         String path = folderBean.getmImgs().get(position);
 //        Log.e("TAG", "==adapter=====path====" + folderBean.getDir() + File.separator + path);
-        Glide.with(mContext).load(folderBean.getDir() + File.separator + path)
-                .placeholder(R.mipmap.photo_no).error(R.mipmap.photo_no).into(holder.mPhoto);
+        Glide.with(mContext)
+                .load(folderBean.getDir() + File.separator + path)
+                .placeholder(R.mipmap.photo_no)
+                .error(R.mipmap.photo_no)
+                .dontAnimate()//取消淡入淡出的动画，减少内存消耗
+                .into(holder.mPhoto);
         holder.mPhotoSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

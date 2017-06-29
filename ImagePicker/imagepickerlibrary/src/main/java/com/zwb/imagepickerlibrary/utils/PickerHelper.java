@@ -21,6 +21,8 @@ public class PickerHelper {
     public final static int CAMERA = 10001;
     public final static int LIBRARY = 10002;
     private int mMaxSize = 300;//默认压缩在300KB 以内
+    private int width = 480;//压缩目标宽度
+    private int hight = 800;//压缩目标高度
 
     /**
      * 从回传值内获取图片路径
@@ -41,12 +43,40 @@ public class PickerHelper {
         Bitmap bitmap = null;
         String path = data.getStringExtra(ImageSelectorActivity.PHOTO_PATH);
         if (!TextUtils.isEmpty(path)) {
-            bitmap = BitmapFactory.decodeFile(path);
+            bitmap = compressBitmap(path,width,hight);
             if (bitmap != null) {
                 bitmap = getBitmap2TargetSize(bitmap, mMaxSize);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                int size = baos.toByteArray().length / 1024;
+                Log.e("info", "--size---" + size);
             }
         }
         return bitmap;
+    }
+
+    public final static Bitmap compressBitmap(String path, int rqsW, int rqsH) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        options.inSampleSize = caculateInSampleSize(options, rqsW, rqsH);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(path, options);
+    }
+
+    public final static int caculateInSampleSize(BitmapFactory.Options options, int rqsW, int rqsH) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (rqsW == 0 || rqsH == 0)
+            return 1;
+        if (height > rqsH || width > rqsW) {
+            final int heightRatio = Math.round((float) height / (float) rqsH);
+            final int widthRatio = Math.round((float) width / (float) rqsW);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
     }
 
     /**

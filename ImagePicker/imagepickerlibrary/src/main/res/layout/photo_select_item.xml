@@ -5,11 +5,17 @@
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical">
 
+    <!--
+        当scaleType设置成fitXY时，
+        Glide缓存的是全尺寸，
+        不会更加imageview的大小来缓存，
+        会消耗更多的内存
+    -->
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@mipmap/photo_no" />
 
     <ImageButton
