@@ -3,7 +3,6 @@ package com.zwb.imagepickerlibrary.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.zwb.imagepickerlibrary.R;
 import com.zwb.imagepickerlibrary.bean.FolderBean;
-import com.zwb.imagepickerlibrary.help.SelectType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,17 +25,17 @@ import java.util.List;
 public class PhotoSelectAdapter extends RecyclerView.Adapter<PhotoSelectHolder> {
     private FolderBean folderBean;
     private Context mContext;
-    private SelectType mSelectType;
+    private int mPhotoCount;
     private OnItemClick onItemClick;
 
     public PhotoSelectAdapter(FolderBean folderBean, Context mContext) {
-        this(folderBean, mContext, SelectType.SINGLE);
+        this(folderBean, mContext, 1);
     }
 
-    public PhotoSelectAdapter(FolderBean folderBean, Context mContext, SelectType selectType) {
+    public PhotoSelectAdapter(FolderBean folderBean, Context mContext, int photoCount) {
         this.folderBean = folderBean;
         this.mContext = mContext;
-        this.mSelectType = selectType;
+        this.mPhotoCount = photoCount;
     }
 
     @Override
@@ -66,7 +64,7 @@ public class PhotoSelectAdapter extends RecyclerView.Adapter<PhotoSelectHolder> 
                     holder.mPhoto.setColorFilter(null);
                 } else {
                     //已经超过了可以最大选择的图片数
-                    if (folderBean.getSelectedImgs().size() >= mSelectType.getCount()) {
+                    if (folderBean.getSelectedImgs().size() >= mPhotoCount) {
                         return;
                     }
                     holder.mPhotoSelect.setSelected(true);
@@ -74,7 +72,7 @@ public class PhotoSelectAdapter extends RecyclerView.Adapter<PhotoSelectHolder> 
                     holder.mPhoto.setColorFilter(0x77000000);
                 }
                 if (onItemClick != null) {
-                    onItemClick.onItemClick(folderBean.getDir(), getSelected(), mSelectType);
+                    onItemClick.onItemClick(folderBean.getDir(), getSelected());
                 }
             }
         });
@@ -116,6 +114,6 @@ public class PhotoSelectAdapter extends RecyclerView.Adapter<PhotoSelectHolder> 
     }
 
     public interface OnItemClick {
-        void onItemClick(String dir, @NonNull List<String> photos, SelectType selectType);
+        void onItemClick(String dir, @NonNull List<String> photos);
     }
 }

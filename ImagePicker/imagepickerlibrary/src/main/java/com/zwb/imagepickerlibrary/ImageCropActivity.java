@@ -1,48 +1,48 @@
 package com.zwb.imagepickerlibrary;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.zwb.imagepickerlibrary.help.SelectType;
+import com.zwb.imagepickerlibrary.utils.PickerHelper;
 
-import static com.zwb.imagepickerlibrary.ImageSelectorActivity.SELECT_TYPE;
 
 /**
  * 图片裁剪
  */
 public class ImageCropActivity extends AppCompatActivity {
-    private SelectType mSelectType;//单选还是多选
-    private static final int CAMERA = 0X110;
+    private int mPhotoCount;//可以选择的图片最大数量
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_crop);
-        createSelectType();
-        Intent intent = new Intent(this, ImageSelectorActivity.class);
-        intent.putExtra(ImageSelectorActivity.SELECT_TYPE, mSelectType);
-        startActivityForResult(intent, CAMERA);
+        initData();
+        goPickPhoto();
     }
 
     /**
-     * 防止未设置单选还是多选
+     * 初始化数据
      */
-    private void createSelectType() {
-        Object object = getIntent().getSerializableExtra(SELECT_TYPE);
-        if (object == null) {
-            mSelectType = SelectType.SINGLE;
-        } else {
-            mSelectType = (SelectType) object;
-        }
+    private void initData() {
+        mPhotoCount = getIntent().getIntExtra(ImageSelectorActivity.PHOTO_COUNT, 1);
+    }
+
+    /**
+     * 开始选择图片
+     */
+    private void goPickPhoto() {
+        Intent intent = new Intent(this, ImageSelectorActivity.class);
+        intent.putExtra(ImageSelectorActivity.PHOTO_COUNT, mPhotoCount);
+        startActivityForResult(intent, PickerHelper.LIBRARY);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        setResult(resultCode, data);
-        finish();
+        if (requestCode == PickerHelper.LIBRARY && resultCode == RESULT_OK) {
+            setResult(resultCode, data);
+            finish();
+        }
     }
 }

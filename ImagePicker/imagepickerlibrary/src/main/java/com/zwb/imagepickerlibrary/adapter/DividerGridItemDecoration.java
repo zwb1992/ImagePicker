@@ -16,7 +16,7 @@ import android.util.TypedValue;
 public class DividerGridItemDecoration extends RecyclerView.ItemDecoration {
 
 
-    private int mWidth = 5;//分割线的宽度--dp
+    private int mWidth = 3;//分割线的宽度--dp
 
     public DividerGridItemDecoration(Context context) {
         mWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mWidth, context.getResources().getDisplayMetrics());
@@ -44,7 +44,7 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration {
         //设置每个item的上下左右内边距,达到透明分割线的效果
         int spanCount = getSpanCount(parent);
         if (itemPosition == 0) {
-            outRect.set(mWidth, mWidth, mWidth, mWidth);
+            outRect.set(0, mWidth, mWidth, mWidth);
         } else if (itemPosition < spanCount) {//第一行
             outRect.set(0, mWidth, mWidth, mWidth);
         } else if (itemPosition % spanCount == 0) {//第一列

@@ -4,8 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,7 +27,6 @@ import android.widget.Toast;
 import com.zwb.imagepickerlibrary.adapter.DividerGridItemDecoration;
 import com.zwb.imagepickerlibrary.adapter.PhotoSelectAdapter;
 import com.zwb.imagepickerlibrary.bean.FolderBean;
-import com.zwb.imagepickerlibrary.help.SelectType;
 import com.zwb.imagepickerlibrary.utils.PhotoDirListPopWindow;
 
 import java.io.File;
@@ -45,8 +42,8 @@ import java.util.Set;
  * 从相册选择图片
  */
 public class ImageSelectorActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String SELECT_TYPE = "SelectType";
-    public static final String PHOTO_PATH = "photo_path";
+    public static final String PHOTO_PATH = "photo_path";//图片的路径
+    public static final String PHOTO_COUNT = "photo_count";//图片的张数
     private RecyclerView recyclerView;
     private TextView tvDirName;
     private TextView tvDirCount;
@@ -58,28 +55,16 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
     private PhotoDirListPopWindow dirListPopWindow;
     private float mScreenHeight;
 
-    private SelectType mSelectType;//单选还是多选
+    private int mPhotoCount;//单选还是多选
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_selector);
-        createSelectType();
+        mPhotoCount = getIntent().getIntExtra(PHOTO_COUNT, 1);
         mScreenHeight = getResources().getDisplayMetrics().heightPixels;
         initView();
         getImages();
-    }
-
-    /**
-     * 防止未设置单选还是多选
-     */
-    private void createSelectType() {
-        Object object = getIntent().getSerializableExtra(SELECT_TYPE);
-        if (object == null) {
-            mSelectType = SelectType.SINGLE;
-        } else {
-            mSelectType = (SelectType) object;
-        }
     }
 
     private void initView() {
@@ -95,12 +80,12 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initAdapter(FolderBean folderBean) {
-        adapter = new PhotoSelectAdapter(folderBean, this, mSelectType);
+        adapter = new PhotoSelectAdapter(folderBean, this, mPhotoCount);
         adapter.setOnItemClick(new PhotoSelectAdapter.OnItemClick() {
             @Override
-            public void onItemClick(String dir, @NonNull List<String> photos, SelectType selectType) {
+            public void onItemClick(String dir, @NonNull List<String> photos) {
                 Intent intent = new Intent();
-                if (selectType == SelectType.SINGLE) {
+                if (photos.size() == 1) {
                     if (!photos.isEmpty()) {
                         String path = photos.get(0);
                         intent.putExtra(PHOTO_PATH, dir + File.separator + path);
@@ -116,7 +101,6 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View view) {
         if (dirListPopWindow != null) {
-            Log.e("TAG", "===isShowing====" + dirListPopWindow.isShowing());
             if (!dirListPopWindow.isShowing()) {
                 dirListPopWindow.showAsDropDown(llBottom, 0, 0);
                 lightOff();
