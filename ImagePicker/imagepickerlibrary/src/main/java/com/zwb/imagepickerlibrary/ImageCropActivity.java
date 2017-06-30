@@ -40,7 +40,7 @@ public class ImageCropActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PickerHelper.LIBRARY && resultCode == RESULT_OK) {
+        if (requestCode == PickerHelper.LIBRARY) {
             setResult(resultCode, data);
             finish();
         }
