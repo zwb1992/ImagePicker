@@ -44,27 +44,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode,final int resultCode,final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PickerHelper.LIBRARY && resultCode == RESULT_OK) {
             Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
             BitmapTools.getBitmapSize(bitmap);
             img.setImageBitmap(bitmap);
         } else if (requestCode == PickerHelper.CAMERA && resultCode == RESULT_OK) {
-//            Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
-//            BitmapTools.getBitmapSize(bitmap);
-//            img.setImageBitmap(bitmap);
-            String path = pickerHelper.getPhotoPath(requestCode, resultCode, data);
-            Glide.with(this)
-                    .load(path)
-                    .asBitmap()
-                    .override(480, 800)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            BitmapTools.getBitmapSize(resource);
-                        }
-                    });
+            Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
+            BitmapTools.getBitmapSize(bitmap);
+            img.setImageBitmap(bitmap);
+
+//            Glide.with(this)
+//                    .load(path)
+//                    .asBitmap()
+//                    .override(480, 800)
+//                    .into(new SimpleTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                            BitmapTools.getBitmapSize(resource);
+//                        }
+//                    });
         }
     }
 

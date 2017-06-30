@@ -79,6 +79,7 @@ public class PickerHelper {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//        File storageDir = Environment.getExternalStorageDirectory();
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -194,11 +195,24 @@ public class PickerHelper {
                 path = data.getStringExtra(ImageSelectorActivity.PHOTO_PATH);
             } else if (requestCode == CAMERA) {
                 path = mCurrentPhotoPath;
+                galleryAddPic();
             }
             bitmap = BitmapTools.getBitmap2TargetWithPathWH(path, width, height, mMaxSize);
         }
         return bitmap;
     }
+
+    /**
+     * 通知
+     */
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        mActivity.sendBroadcast(mediaScanIntent);
+    }
+
 
     /**
      * Android 6.0 权限验证

@@ -3,12 +3,14 @@ package com.zwb.imagepickerlibrary.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Created by zwb
@@ -49,13 +51,21 @@ public class BitmapTools {
     public final static Bitmap compressBitmapFromPath(String path, int rqsW, int rqsH) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        try {
-            FileInputStream in = new FileInputStream(new File(path));
-            BitmapFactory.decodeStream(in,null,options);
-        }catch (Exception e){
-            e.printStackTrace();
+        BitmapFactory.decodeFile(path, options);
+        //注意：重点中的重点，碰到某些奇葩手机，居然拿不到图片的宽高，需要用下面的方式去获取
+        if (options.outHeight == -1 || options.outWidth == -1) {
+            try {
+                ExifInterface exifInterface = new ExifInterface(path);
+                int height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);//获取图片的高度
+                int width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);//获取图片的宽度
+                Log.i("info", "exif height: " + height);
+                Log.i("info", "exif width: " + width);
+                options.outWidth = width;
+                options.outHeight = height;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-//        BitmapFactory.decodeFile(path, options);
         options.inSampleSize = getInSampleSize(options, rqsW, rqsH);
         Log.e("info", "---inSampleSize---" + options.inSampleSize);
         options.inJustDecodeBounds = false;
