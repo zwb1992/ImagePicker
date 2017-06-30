@@ -3,9 +3,12 @@ package com.zwb.imagepickerlibrary.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * Created by zwb
@@ -14,6 +17,26 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class BitmapTools {
+
+    /**
+     * 从文件路径得到压缩后的图片
+     *
+     * @param path     图片的路径
+     * @param width    期望的宽度
+     * @param height   期望的高度
+     * @param mMaxSize 如果压缩之后大于目标大小，继续压缩至目标大小
+     * @return bitmap
+     */
+    public static Bitmap getBitmap2TargetWithPathWH(String path, int width, int height, int mMaxSize) {
+        Bitmap bitmap = null;
+        if (!TextUtils.isEmpty(path)) {
+            bitmap = BitmapTools.compressBitmapFromPath(path, width, height);
+            if (bitmap != null) {
+                bitmap = BitmapTools.getBitmap2TargetSize(bitmap, mMaxSize);
+            }
+        }
+        return bitmap;
+    }
 
     /**
      * 从sd卡获取图片时，如果图片过大需要对图片进行压缩，防止oom
@@ -26,8 +49,15 @@ public class BitmapTools {
     public final static Bitmap compressBitmapFromPath(String path, int rqsW, int rqsH) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
+        try {
+            FileInputStream in = new FileInputStream(new File(path));
+            BitmapFactory.decodeStream(in,null,options);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//        BitmapFactory.decodeFile(path, options);
         options.inSampleSize = getInSampleSize(options, rqsW, rqsH);
+        Log.e("info", "---inSampleSize---" + options.inSampleSize);
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(path, options);
     }
@@ -42,7 +72,9 @@ public class BitmapTools {
      */
     public final static int getInSampleSize(BitmapFactory.Options options, int rqsW, int rqsH) {
         final int height = options.outHeight;
+        Log.e("info", "---file   height---==" + height);
         final int width = options.outWidth;
+        Log.e("info", "---file    width---==" + width);
         int inSampleSize = 1;
         if (rqsW == 0 || rqsH == 0)
             return 1;
@@ -69,7 +101,9 @@ public class BitmapTools {
         //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         int size = baos.toByteArray().length / 1024;
-        Log.e("info", "--size---" + size + "  kb");
+        Log.e("info", "---原图---size---" + size + "  kb");
+        Log.e("info", "---原图----width---" + bitmap.getWidth());
+        Log.e("info", "---原图-----height---" + bitmap.getHeight());
         if (baos.toByteArray().length / 1024.0f > targetSize) {
             float scale = 1024.0f * targetSize / baos.toByteArray().length;
             bitmap = zoomBitmapByScale(bitmap, (float) Math.sqrt(scale));
@@ -90,5 +124,16 @@ public class BitmapTools {
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
         return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+    }
+
+    public static int getBitmapSize(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        int size = baos.toByteArray().length / 1024;
+        Log.e("info", "--压缩后的图片--size---" + size + "  kb");
+        Log.e("info", "--压缩后的图片--getWidth---" + bitmap.getWidth());
+        Log.e("info", "--压缩后的图片--getHeight---" + bitmap.getHeight());
+        return size;
     }
 }

@@ -17,6 +17,12 @@
         android:layout_height="wrap_content"
         android:text="选择图片" />
 
+    <Button
+        android:id="@+id/bt_take"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="拍照" />
+
     <ImageView
         android:id="@+id/img"
         android:layout_width="wrap_content"

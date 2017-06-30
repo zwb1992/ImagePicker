@@ -5,8 +5,13 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.zwb.imagepickerlibrary.utils.BitmapTools;
 import com.zwb.imagepickerlibrary.utils.PickerHelper;
 
 import butterknife.Bind;
@@ -26,9 +31,16 @@ public class MainActivity extends AppCompatActivity {
         pickerHelper = new PickerHelper();
     }
 
-    @OnClick(R.id.bt_select)
-    public void onClick() {
-        pickerHelper.pickPhoto(this);
+    @OnClick({R.id.bt_select, R.id.bt_take})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.bt_take:
+                pickerHelper.takePhoto(this);
+                break;
+            case R.id.bt_select:
+                pickerHelper.pickPhoto(this);
+                break;
+        }
     }
 
     @Override
@@ -36,7 +48,23 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PickerHelper.LIBRARY && resultCode == RESULT_OK) {
             Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
+            BitmapTools.getBitmapSize(bitmap);
             img.setImageBitmap(bitmap);
+        } else if (requestCode == PickerHelper.CAMERA && resultCode == RESULT_OK) {
+//            Bitmap bitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
+//            BitmapTools.getBitmapSize(bitmap);
+//            img.setImageBitmap(bitmap);
+            String path = pickerHelper.getPhotoPath(requestCode, resultCode, data);
+            Glide.with(this)
+                    .load(path)
+                    .asBitmap()
+                    .override(480, 800)
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            BitmapTools.getBitmapSize(resource);
+                        }
+                    });
         }
     }
 
