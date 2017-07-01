@@ -15,17 +15,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.zwb.imagepickerlibrary.ImageCropActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.zwb.imagepickerlibrary.ImageSelectorActivity"
-            android:screenOrientation="portrait" />
-
-        <meta-data
-            android:name="com.zwb.imagepickerlibrary.help.MyGlideModule"
-            android:value="GlideModule" />
-
     </application>
 
 </manifest>

@@ -8,8 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -82,16 +80,14 @@ public class BitmapTools {
      */
     public final static int getInSampleSize(BitmapFactory.Options options, int rqsW, int rqsH) {
         final int height = options.outHeight;
-        Log.e("info", "---file   height---==" + height);
         final int width = options.outWidth;
-        Log.e("info", "---file    width---==" + width);
         int inSampleSize = 1;
         if (rqsW == 0 || rqsH == 0)
             return 1;
         if (height > rqsH || width > rqsW) {
             final int heightRatio = Math.round((float) height / (float) rqsH);
             final int widthRatio = Math.round((float) width / (float) rqsW);
-            inSampleSize = Math.max(heightRatio, widthRatio);
+            inSampleSize = Math.min(heightRatio, widthRatio);
         }
         return inSampleSize;
     }

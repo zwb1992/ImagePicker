@@ -9,4 +9,28 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+
+    <application>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.zwb.imagepicker.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.zwb.imagepickerlibrary.ImageCropActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.zwb.imagepickerlibrary.ImageSelectorActivity"
+            android:screenOrientation="portrait" />
+
+        <meta-data
+            android:name="com.zwb.imagepickerlibrary.help.MyGlideModule"
+            android:value="GlideModule" />
+
+    </application>
 </manifest>
