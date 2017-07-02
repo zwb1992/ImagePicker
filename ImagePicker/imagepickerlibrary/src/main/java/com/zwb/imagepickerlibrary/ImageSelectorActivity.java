@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,11 +83,18 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
         adapter.setOnItemClick(new PhotoSelectAdapter.OnItemClick() {
             @Override
             public void onItemClick(String dir, @NonNull List<String> photos) {
-                Intent intent = new Intent();
-                if (photos.size() == 1) {
-                    if (!photos.isEmpty()) {
+                if (!photos.isEmpty()) {
+                    Intent intent = new Intent();
+                    if (photos.size() == 1) {
                         String path = photos.get(0);
                         intent.putExtra(PHOTO_PATH, dir + File.separator + path);
+                        intent.putExtra(PHOTO_COUNT, photos.size());
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    } else {
+                        ArrayList arrayList = convertPhotos(dir,photos);
+                        intent.putStringArrayListExtra(PHOTO_PATH, arrayList);
+                        intent.putExtra(PHOTO_COUNT, photos.size());
                         setResult(RESULT_OK, intent);
                         finish();
                     }
@@ -97,6 +103,15 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
         });
         recyclerView.setAdapter(adapter);
     }
+
+    private ArrayList convertPhotos(String dir, @NonNull List<String> photos) {
+        ArrayList arrayList = new ArrayList();
+        for (String path : photos) {
+            arrayList.add(dir + File.separator + path);
+        }
+        return arrayList;
+    }
+
 
     @Override
     public void onClick(View view) {
