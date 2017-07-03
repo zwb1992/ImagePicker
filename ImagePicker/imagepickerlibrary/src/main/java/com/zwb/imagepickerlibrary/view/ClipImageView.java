@@ -92,7 +92,7 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
     @Override
     public void onGlobalLayout() {
         Log.e("info", "--onGlobalLayout-----getDrawable------" + getDrawable());
-        if (false) {
+        if (once) {
             matrix = new Matrix();
             float scale = 1.0f;
             int width = getWidth();
@@ -190,18 +190,20 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
      * @return
      */
     public Bitmap clipForCircle() {
-        int borderlength = getMeasuredWidth() - 80;
-        Log.e("info", "=====borderlength=======" + borderlength);
+        int borderLength = getMeasuredWidth() - 80;
+        Log.e("info", "=====borderLength=======" + borderLength);
         Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         draw(canvas);
 
-        Bitmap bitmap1 = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap srcBitmap = Bitmap.createBitmap(bitmap, (getWidth() - borderLength) / 2, (getHeight() - borderLength) / 2, borderLength, borderLength);
+
+        Bitmap bitmap1 = Bitmap.createBitmap(srcBitmap.getWidth(), srcBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas1 = new Canvas(bitmap1);
         mShapePaint.setStyle(Paint.Style.FILL);
-        canvas1.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, getMeasuredWidth() / 2 - 40, mShapePaint);
+        canvas1.drawCircle(srcBitmap.getWidth() / 2, srcBitmap.getHeight() / 2, srcBitmap.getWidth() / 2, mShapePaint);
         mShapePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas1.drawBitmap(bitmap, 0, 0, mShapePaint);
+        canvas1.drawBitmap(srcBitmap, 0, 0, mShapePaint);
         return bitmap1;
     }
 }
