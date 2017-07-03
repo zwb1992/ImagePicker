@@ -85,14 +85,14 @@ public class ImageSelectorActivity extends AppCompatActivity implements View.OnC
             public void onItemClick(String dir, @NonNull List<String> photos) {
                 if (!photos.isEmpty()) {
                     Intent intent = new Intent();
-                    if (photos.size() == 1) {
+                    if (mPhotoCount == 1) {//单选
                         String path = photos.get(0);
                         intent.putExtra(PHOTO_PATH, dir + File.separator + path);
                         intent.putExtra(PHOTO_COUNT, photos.size());
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        ArrayList arrayList = convertPhotos(dir,photos);
+                        ArrayList arrayList = convertPhotos(dir, photos);
                         intent.putStringArrayListExtra(PHOTO_PATH, arrayList);
                         intent.putExtra(PHOTO_COUNT, photos.size());
                         setResult(RESULT_OK, intent);

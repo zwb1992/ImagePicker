@@ -7,4 +7,10 @@
         <item name="android:windowExitAnimation">@anim/out_to_bottom</item>
         <!-- 指定消失的动画xml  -->
     </style>
+
+    <style name="smallLoadingProgressStyle" parent="@android:style/Widget.ProgressBar.Small">
+        <item name="android:indeterminateDrawable">@drawable/refresh_loading</item>
+        <item name="android:layout_width">26dip</item>
+        <item name="android:layout_height">26dip</item>
+    </style>
 </resources>

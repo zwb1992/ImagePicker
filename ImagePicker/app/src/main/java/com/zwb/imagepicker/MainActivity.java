@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.zwb.imagepickerlibrary.help.ImageShapeType;
 import com.zwb.imagepickerlibrary.utils.BitmapTools;
 import com.zwb.imagepickerlibrary.utils.Cropper;
 
@@ -38,13 +39,13 @@ public class MainActivity extends AppCompatActivity {
                 mCropper.takePhoto(this);
                 break;
             case R.id.bt_select:
-                mCropper.pickPhoto(this);
+                mCropper.pickPhoto(this, ImageShapeType.ROUND);
                 break;
         }
     }
 
     @Override
-    protected void onActivityResult(final int requestCode,final int resultCode,final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Cropper.LIBRARY && resultCode == RESULT_OK) {
             Bitmap bitmap = mCropper.getSingleBitmap(requestCode, resultCode, data);

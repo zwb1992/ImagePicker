@@ -56,8 +56,8 @@ public class BitmapTools {
                 ExifInterface exifInterface = new ExifInterface(path);
                 int height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);//获取图片的高度
                 int width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);//获取图片的宽度
-                Log.i("info", "exif height: " + height);
-                Log.i("info", "exif width: " + width);
+                Log.e("info", "exif height: " + height);
+                Log.e("info", "exif width: " + width);
                 options.outWidth = width;
                 options.outHeight = height;
             } catch (IOException e) {
@@ -80,7 +80,9 @@ public class BitmapTools {
      */
     public final static int getInSampleSize(BitmapFactory.Options options, int rqsW, int rqsH) {
         final int height = options.outHeight;
+        Log.e("info", "file height: " + height);
         final int width = options.outWidth;
+        Log.e("info", "file width: " + width);
         int inSampleSize = 1;
         if (rqsW == 0 || rqsH == 0)
             return 1;
