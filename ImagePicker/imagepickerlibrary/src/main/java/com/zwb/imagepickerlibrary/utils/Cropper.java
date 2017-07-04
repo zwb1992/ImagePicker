@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +14,6 @@ import com.zwb.imagepickerlibrary.ImageCropActivity;
 import com.zwb.imagepickerlibrary.ImageSelectorActivity;
 import com.zwb.imagepickerlibrary.help.ImageShapeType;
 
-import java.io.File;
 import java.util.List;
 
 
@@ -161,7 +159,7 @@ public class Cropper {
     /**
      * 从回传值内获取图片路径
      *
-     * @return path
+     * @return path 这里的路径代表的图片时原始尺寸的图片
      */
     public String getSinglePhotoPath(int requestCode, int resultCode, Intent data) {
         String path = null;
@@ -174,7 +172,7 @@ public class Cropper {
     /**
      * 从回传值内获取图片路径--多选
      *
-     * @return path
+     * @return path 这里的路径代表的图片时原始尺寸的图片
      */
     public List<String> getMultiplePhotoPath(int requestCode, int resultCode, Intent data) {
         List<String> paths = null;
@@ -196,20 +194,6 @@ public class Cropper {
         }
         return bitmap;
     }
-
-    /**
-     * 从回传值内获取图片--多图
-     *
-     * @return path
-     */
-    public List<Bitmap> getMultipleBitmap(int requestCode, int resultCode, Intent data) {
-        List<Bitmap> bitmaps = null;
-        if (resultCode == Activity.RESULT_OK) {
-            bitmaps = data.getParcelableArrayListExtra(ImageCropActivity.IMAGE_BITMAP);
-        }
-        return bitmaps;
-    }
-
 
     /**
      * Android 6.0 权限验证

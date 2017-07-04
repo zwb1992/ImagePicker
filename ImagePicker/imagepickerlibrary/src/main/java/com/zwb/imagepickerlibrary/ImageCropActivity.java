@@ -1,12 +1,9 @@
 package com.zwb.imagepickerlibrary;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,8 +38,6 @@ public class ImageCropActivity extends AppCompatActivity {
     private int type;//是拍照获取图片还是图库获取图片
     private PickerHelper pickerHelper;
 
-    private int widthPixels;
-    private int heightPixels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +49,7 @@ public class ImageCropActivity extends AppCompatActivity {
 
     private void initView() {
         clipImageView = (ClipImageView) findViewById(R.id.clipImageView);
-        testImg = (ImageView)findViewById(R.id.testImg);
+        testImg = (ImageView) findViewById(R.id.testImg);
         loadingLayout = (LinearLayout) findViewById(R.id.rl_loading_layout);
         loadingLayout.setVisibility(View.GONE);
         findViewById(R.id.tv_cancel).setOnClickListener(new View.OnClickListener() {
@@ -67,30 +62,32 @@ public class ImageCropActivity extends AppCompatActivity {
         findViewById(R.id.tv_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = clipImageView.clipForCircle();
-                clipImageView.setVisibility(View.GONE);
-                testImg.setVisibility(View.VISIBLE);
-                Log.e("info","==tv_confirm==width="+bitmap.getWidth());
-                Log.e("info","===tv_confirm==height="+bitmap.getHeight());
-                BitmapTools.getBitmapSize(bitmap);
-                bitmap = BitmapTools.getBitmap2TargetSize(bitmap,300);
-                BitmapTools.getBitmapSize(bitmap);
-                testImg.setImageBitmap(bitmap);
-//                Intent intent = new Intent();
-//                intent.putExtra(IMAGE_BITMAP, bitmap);
-//                setResult(RESULT_OK, intent);
-//                finish();
+                Bitmap bitmap = clipImageView.clipBitmap();
+                bitmap = bitmap == null ? mBitmap : bitmap;
+                if (bitmap == null) {
+                    return;
+                }
+//                clipImageView.setVisibility(View.GONE);
+//                testImg.setVisibility(View.VISIBLE);
+//                Log.e("info", "==tv_confirm==width=" + bitmap.getWidth());
+//                Log.e("info", "===tv_confirm==height=" + bitmap.getHeight());
+//                BitmapTools.getBitmapSize(bitmap);
+                bitmap = BitmapTools.getBitmap2TargetSize(bitmap, 300);
+//                BitmapTools.getBitmapSize(bitmap);
+//                testImg.setImageBitmap(bitmap);
+                Intent intent = new Intent();
+                intent.putExtra(IMAGE_BITMAP, bitmap);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }
+
 
     /**
      * 初始化数据
      */
     private void initData() {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        widthPixels = displayMetrics.widthPixels;
-        heightPixels = displayMetrics.heightPixels;
         Intent intent = getIntent();
         mPhotoCount = intent.getIntExtra(ImageSelectorActivity.PHOTO_COUNT, 1);
         type = intent.getIntExtra(TYPE, CAMERA);
@@ -132,41 +129,40 @@ public class ImageCropActivity extends AppCompatActivity {
                 int count = data.getIntExtra(ImageSelectorActivity.PHOTO_COUNT, 1);
                 //单张图片
                 if (count == 1) {
-//                    mBitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
-//                    BitmapTools.getBitmapSize(mBitmap);
-//                    clipImageView.setImageBitmap(mBitmap);
+                    loadingLayout.setVisibility(View.VISIBLE);
                     String path = pickerHelper.getPhotoPath(requestCode, resultCode, data);
-                    mBitmap = BitmapTools.compressBitmapFromPath(path,480,800);
-                    clipImageView.setImageBitmap(mBitmap);
-//                    initBitmap(this, path);
+                    loadBitmap(path);
                 }
                 //多张图片，直接返回到上一页
                 else {
                     setResult(resultCode, data);
                     finish();
                 }
-
             }
             //拍照
             else if (requestCode == PickerHelper.CAMERA) {
-//                String path = pickerHelper.getPhotoPath(requestCode,resultCode,data);
-//                initBitmap(this,path);
-                mBitmap = pickerHelper.getPhotoBitmap(requestCode, resultCode, data);
-                BitmapTools.getBitmapSize(mBitmap);
-                clipImageView.setImageBitmap(mBitmap);
+                loadingLayout.setVisibility(View.VISIBLE);
+                String path = pickerHelper.getPhotoPath(requestCode, resultCode, data);
+                loadBitmap(path);
             }
         }
     }
 
-    private void initBitmap(Activity activity, String path) {
-        Glide.with(activity)
+    /**
+     * 使用glide 异步加载图片
+     *
+     * @param path 图片地址
+     */
+    private void loadBitmap(String path) {
+        Glide.with(this)
                 .load(path)
                 .asBitmap()
-                .override(widthPixels, heightPixels)
+                .override(500, 500)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        BitmapTools.getBitmapSize(resource);
+                        mBitmap = resource;
+                        loadingLayout.setVisibility(View.GONE);
                         clipImageView.setImageBitmap(resource);
                     }
                 });
