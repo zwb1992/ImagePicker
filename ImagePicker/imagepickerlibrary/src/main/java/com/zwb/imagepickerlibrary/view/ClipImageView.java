@@ -162,6 +162,7 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
             if (drawable == null) {
                 return;
             }
+            drawable.setAlpha(255);
             int dw = drawable.getIntrinsicWidth();
             int dh = drawable.getIntrinsicHeight();
             Log.e("info", "==onGlobalLayout==dw===" + dw + ",==dh===" + dh);
@@ -194,9 +195,9 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        drawShapeBg();
-        canvas.drawBitmap(mShapeBitmap, 0, 0, null);
-        drawShape(canvas);
+//        drawShapeBg();
+//        canvas.drawBitmap(mShapeBitmap, 0, 0, null);
+//        drawShape(canvas);
     }
 
     /**
@@ -206,6 +207,9 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
         if (imageShapeType == null || imageShapeType == ImageShapeType.NO_CLIP) {
             return;
         }
+        Log.e("info", "==drawShapeBg==dw===");
+        mShapeBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        mShapeCanvas = new Canvas(mShapeBitmap);
         mShapeCanvas.drawRect(mBgRect, mBgPaint);
         mShapePaint.setStyle(Paint.Style.FILL);
         mShapePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));

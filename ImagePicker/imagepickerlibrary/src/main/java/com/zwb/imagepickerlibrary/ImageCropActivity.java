@@ -67,18 +67,15 @@ public class ImageCropActivity extends AppCompatActivity {
                 if (bitmap == null) {
                     return;
                 }
-//                clipImageView.setVisibility(View.GONE);
-//                testImg.setVisibility(View.VISIBLE);
-//                Log.e("info", "==tv_confirm==width=" + bitmap.getWidth());
-//                Log.e("info", "===tv_confirm==height=" + bitmap.getHeight());
-//                BitmapTools.getBitmapSize(bitmap);
+                clipImageView.setVisibility(View.GONE);
+                testImg.setVisibility(View.VISIBLE);
+                Log.e("info", "==tv_confirm==width=" + bitmap.getWidth());
+                Log.e("info", "===tv_confirm==height=" + bitmap.getHeight());
+                BitmapTools.getBitmapSize(bitmap);
                 bitmap = BitmapTools.getBitmap2TargetSize(bitmap, 300);
-//                BitmapTools.getBitmapSize(bitmap);
+                BitmapTools.getBitmapSize(bitmap);
 //                testImg.setImageBitmap(bitmap);
-                Intent intent = new Intent();
-                intent.putExtra(IMAGE_BITMAP, bitmap);
-                setResult(RESULT_OK, intent);
-                finish();
+                pickerHelper.returnBitmap(bitmap);
             }
         });
     }
@@ -164,6 +161,9 @@ public class ImageCropActivity extends AppCompatActivity {
                         mBitmap = resource;
                         loadingLayout.setVisibility(View.GONE);
                         clipImageView.setImageBitmap(resource);
+//                        clipImageView.setVisibility(View.GONE);
+//                        testImg.setVisibility(View.VISIBLE);
+//                        testImg.setImageBitmap(resource);
                     }
                 });
     }

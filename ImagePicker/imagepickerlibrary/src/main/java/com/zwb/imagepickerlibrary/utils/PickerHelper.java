@@ -12,8 +12,10 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.zwb.imagepickerlibrary.ImageCropActivity;
 import com.zwb.imagepickerlibrary.ImageSelectorActivity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -165,7 +167,16 @@ public class PickerHelper {
         mActivity.sendBroadcast(mediaScanIntent);
     }
 
-    private void returnBitmap(Bitmap bitmap) {
-
+    /**
+     * 返回压缩后的图片字节数组
+     * @param bitmap
+     */
+    public void returnBitmap(Bitmap bitmap) {
+        Intent intent = new Intent();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+        intent.putExtra(ImageCropActivity.IMAGE_BITMAP, baos.toByteArray());
+        mActivity.setResult(Activity.RESULT_OK, intent);
+        mActivity.finish();
     }
 }

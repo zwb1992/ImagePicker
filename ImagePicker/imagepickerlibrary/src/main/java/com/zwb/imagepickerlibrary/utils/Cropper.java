@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -190,7 +191,10 @@ public class Cropper {
     public Bitmap getBitmap(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap = null;
         if (resultCode == Activity.RESULT_OK) {
-            bitmap = data.getParcelableExtra(ImageCropActivity.IMAGE_BITMAP);
+            byte[] bytes = data.getByteArrayExtra(ImageCropActivity.IMAGE_BITMAP);
+            if (bytes != null && bytes.length > 0) {
+                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            }
         }
         return bitmap;
     }
