@@ -132,8 +132,9 @@ public class PickerHelper {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == LIBRARY) {
                 path = data.getStringExtra(ImageSelectorActivity.PHOTO_PATH);
-            } else {
+            } else if (requestCode == CAMERA) {
                 path = mCurrentPhotoPath;
+                galleryAddPic();
             }
         }
         return path;
@@ -146,14 +147,8 @@ public class PickerHelper {
      */
     public Bitmap getPhotoBitmap(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap = null;
-        if (resultCode == Activity.RESULT_OK) {
-            String path = null;
-            if (requestCode == LIBRARY) {
-                path = data.getStringExtra(ImageSelectorActivity.PHOTO_PATH);
-            } else if (requestCode == CAMERA) {
-                path = mCurrentPhotoPath;
-                galleryAddPic();
-            }
+        String path = getPhotoPath(requestCode, resultCode, data);
+        if (path != null) {
             bitmap = BitmapTools.getBitmap2TargetWithPathWH(path, width, height, mMaxSize);
         }
         return bitmap;
@@ -170,4 +165,7 @@ public class PickerHelper {
         mActivity.sendBroadcast(mediaScanIntent);
     }
 
+    private void returnBitmap(Bitmap bitmap) {
+
+    }
 }

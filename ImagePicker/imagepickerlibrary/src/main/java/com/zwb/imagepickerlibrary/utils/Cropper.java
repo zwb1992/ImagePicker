@@ -187,7 +187,7 @@ public class Cropper {
      *
      * @return bitmap
      */
-    public Bitmap getSingleBitmap(int requestCode, int resultCode, Intent data) {
+    public Bitmap getBitmap(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap = null;
         if (resultCode == Activity.RESULT_OK) {
             bitmap = data.getParcelableExtra(ImageCropActivity.IMAGE_BITMAP);

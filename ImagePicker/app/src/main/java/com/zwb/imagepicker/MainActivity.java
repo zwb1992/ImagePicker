@@ -8,9 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.zwb.imagepickerlibrary.help.ImageShapeType;
 import com.zwb.imagepickerlibrary.utils.BitmapTools;
 import com.zwb.imagepickerlibrary.utils.Cropper;
@@ -48,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Cropper.LIBRARY && resultCode == RESULT_OK) {
-            Bitmap bitmap = mCropper.getSingleBitmap(requestCode, resultCode, data);
+            Bitmap bitmap = mCropper.getBitmap(requestCode, resultCode, data);
             BitmapTools.getBitmapSize(bitmap);
             img.setImageBitmap(bitmap);
         } else if (requestCode == Cropper.CAMERA && resultCode == RESULT_OK) {
-            Bitmap bitmap = mCropper.getSingleBitmap(requestCode, resultCode, data);
+            Bitmap bitmap = mCropper.getBitmap(requestCode, resultCode, data);
             BitmapTools.getBitmapSize(bitmap);
             img.setImageBitmap(bitmap);
 
