@@ -195,9 +195,9 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        drawShapeBg();
-//        canvas.drawBitmap(mShapeBitmap, 0, 0, null);
-//        drawShape(canvas);
+        drawShapeBg();
+        canvas.drawBitmap(mShapeBitmap, 0, 0, null);
+        drawShape(canvas);
     }
 
     /**

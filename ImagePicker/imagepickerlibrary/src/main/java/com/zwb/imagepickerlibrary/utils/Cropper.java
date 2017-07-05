@@ -160,7 +160,7 @@ public class Cropper {
     /**
      * 从回传值内获取图片路径
      *
-     * @return path 这里的路径代表的图片时原始尺寸的图片
+     * @return path 这里的路径代表的裁剪后的图片路径
      */
     public String getSinglePhotoPath(int requestCode, int resultCode, Intent data) {
         String path = null;
@@ -186,15 +186,13 @@ public class Cropper {
     /**
      * 从回传值内获取图片
      *
-     * @return bitmap
+     * @return bitmap 图片已经裁剪过了
      */
     public Bitmap getBitmap(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap = null;
-        if (resultCode == Activity.RESULT_OK) {
-            byte[] bytes = data.getByteArrayExtra(ImageCropActivity.IMAGE_BITMAP);
-            if (bytes != null && bytes.length > 0) {
-                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            }
+        String path = getSinglePhotoPath(requestCode, resultCode, data);
+        if (path != null) {
+            bitmap = BitmapFactory.decodeFile(path);
         }
         return bitmap;
     }

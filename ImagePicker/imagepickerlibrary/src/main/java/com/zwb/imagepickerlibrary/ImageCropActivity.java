@@ -1,8 +1,13 @@
 package com.zwb.imagepickerlibrary;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +42,7 @@ public class ImageCropActivity extends AppCompatActivity {
     private Bitmap mBitmap;//得到的单张图片
     private int type;//是拍照获取图片还是图库获取图片
     private PickerHelper pickerHelper;
-
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,19 +72,16 @@ public class ImageCropActivity extends AppCompatActivity {
                 if (bitmap == null) {
                     return;
                 }
-                clipImageView.setVisibility(View.GONE);
-                testImg.setVisibility(View.VISIBLE);
+//                clipImageView.setVisibility(View.GONE);
+//                testImg.setVisibility(View.VISIBLE);
                 Log.e("info", "==tv_confirm==width=" + bitmap.getWidth());
                 Log.e("info", "===tv_confirm==height=" + bitmap.getHeight());
                 BitmapTools.getBitmapSize(bitmap);
-                bitmap = BitmapTools.getBitmap2TargetSize(bitmap, 300);
-                BitmapTools.getBitmapSize(bitmap);
 //                testImg.setImageBitmap(bitmap);
-                pickerHelper.returnBitmap(bitmap);
+                new BitmapWorkerTask().execute(bitmap);
             }
         });
     }
-
 
     /**
      * 初始化数据
@@ -166,5 +168,57 @@ public class ImageCropActivity extends AppCompatActivity {
 //                        testImg.setImageBitmap(resource);
                     }
                 });
+    }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Intent intent = new Intent();
+            intent.putExtra(ImageSelectorActivity.PHOTO_PATH, pickerHelper.getmCachePhotoPath());
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
+    };
+
+    /**
+     * 裁剪图片线程
+     */
+    class BitmapWorkerTask extends AsyncTask<Bitmap, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = ProgressDialog.show(ImageCropActivity.this, null, "正在裁剪中...");
+        }
+
+        @Override
+        protected String doInBackground(Bitmap... params) {
+            String path = null;
+            try {
+                pickerHelper.writeClipBitmap2File(params[0]);
+                path = pickerHelper.getmCachePhotoPath();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return path;
+        }
+
+        @Override
+        protected void onPostExecute(String path) {
+            super.onPostExecute(path);
+            mProgressDialog.dismiss();
+            if (handler != null && path != null) {
+                handler.sendEmptyMessage(0x110);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler = null;
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
     }
 }

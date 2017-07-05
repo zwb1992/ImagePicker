@@ -15,8 +15,10 @@ import android.widget.Toast;
 import com.zwb.imagepickerlibrary.ImageCropActivity;
 import com.zwb.imagepickerlibrary.ImageSelectorActivity;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class PickerHelper {
     private Activity mActivity;
 
     private String mCurrentPhotoPath;//点击拍照生成的路径
+    private String mCachePhotoPath;//压缩后的文件路径
 
     public PickerHelper(Activity mActivity) {
         this.mActivity = mActivity;
@@ -157,7 +160,7 @@ public class PickerHelper {
     }
 
     /**
-     * 通知
+     * 通知系统照片gallery去扫描该照片
      */
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -168,15 +171,45 @@ public class PickerHelper {
     }
 
     /**
-     * 返回压缩后的图片字节数组
-     * @param bitmap
+     * 把压缩后的图片写入文件
      */
-    public void returnBitmap(Bitmap bitmap) {
-        Intent intent = new Intent();
+    public void writeClipBitmap2File(Bitmap bitmap) throws Exception {
+        bitmap = BitmapTools.getBitmap2TargetSize(bitmap, mMaxSize);
+        BitmapTools.getBitmapSize(bitmap);
+        createCacheFile();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
-        intent.putExtra(ImageCropActivity.IMAGE_BITMAP, baos.toByteArray());
-        mActivity.setResult(Activity.RESULT_OK, intent);
-        mActivity.finish();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        FileOutputStream fileOutputStream = new FileOutputStream(mCachePhotoPath);
+        BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+        bos.write(baos.toByteArray());
+        bitmap.recycle();
+        bos.flush();
+        baos.close();
+    }
+
+    /**
+     * 来至google文档--创建拍照存储的图片路径
+     *
+     * @return 返回文件
+     * @throws IOException
+     */
+    private File createCacheFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = mActivity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCachePhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    public String getmCachePhotoPath() {
+        return mCachePhotoPath;
     }
 }
