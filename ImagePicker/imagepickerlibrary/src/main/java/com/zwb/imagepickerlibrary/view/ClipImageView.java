@@ -28,10 +28,6 @@ import com.zwb.imagepickerlibrary.help.ImageShapeType;
 public class ClipImageView extends ImageView implements ViewTreeObserver.OnGlobalLayoutListener {
     private boolean once = true;
     /**
-     * 是否初始化完
-     */
-    private boolean init = false;
-    /**
      * 形状
      */
     private ImageShapeType imageShapeType;
@@ -122,19 +118,12 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (!init) {
-            Log.e("info", "--onMeasure------");
-            init = true;
-            int w = getMeasuredWidth();
-            int h = getMeasuredHeight();
-            int minSize = Math.min(w, h);
-            mRadius = minSize / 2 - borderPadding - mShapePaintWidth;
-            mShapeBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            mShapeCanvas = new Canvas(mShapeBitmap);
-            mBgRect.set(0, 0, w, h);
-
-            mShapeRect.set(w / 2.0f - mRadius, h / 2.0f - mRadius, w / 2.0f + mRadius, h / 2.0f + mRadius);
-        }
+        int w = getMeasuredWidth();
+        int h = getMeasuredHeight();
+        int minSize = Math.min(w, h);
+        mRadius = minSize / 2 - borderPadding - mShapePaintWidth;
+        mBgRect.set(0, 0, w, h);
+        mShapeRect.set(w / 2.0f - mRadius, h / 2.0f - mRadius, w / 2.0f + mRadius, h / 2.0f + mRadius);
     }
 
     @Override
@@ -151,7 +140,6 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
 
     @Override
     public void onGlobalLayout() {
-        Log.e("info", "--onGlobalLayout-----getDrawable------" + getDrawable());
         if (once) {
             matrix = new Matrix();
             float scale = 1.0f;
@@ -271,11 +259,10 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
             return null;
         }
         int borderLength = mRadius * 2;
-        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         draw(canvas);
-
-        Bitmap srcBitmap = Bitmap.createBitmap(bitmap, (getWidth() - borderLength) / 2, (getHeight() - borderLength) / 2, borderLength, borderLength);
+        Bitmap srcBitmap = Bitmap.createBitmap(bitmap, (getMeasuredWidth() - borderLength) / 2, (getMeasuredHeight() - borderLength) / 2, borderLength, borderLength);
         bitmap.recycle();//回收原来的图片
 
         Bitmap bitmap1 = Bitmap.createBitmap(srcBitmap.getWidth(), srcBitmap.getHeight(), Bitmap.Config.ARGB_8888);

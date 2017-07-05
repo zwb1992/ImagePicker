@@ -34,7 +34,6 @@ public class ImageCropActivity extends AppCompatActivity {
     public final static int LIBRARY = 10002;
 
     private ClipImageView clipImageView;
-    private ImageView testImg;
     private LinearLayout loadingLayout;
     private int mPhotoCount;//可以选择的图片最大数量
 
@@ -54,7 +53,6 @@ public class ImageCropActivity extends AppCompatActivity {
 
     private void initView() {
         clipImageView = (ClipImageView) findViewById(R.id.clipImageView);
-        testImg = (ImageView) findViewById(R.id.testImg);
         loadingLayout = (LinearLayout) findViewById(R.id.rl_loading_layout);
         loadingLayout.setVisibility(View.GONE);
         findViewById(R.id.tv_cancel).setOnClickListener(new View.OnClickListener() {
@@ -91,7 +89,7 @@ public class ImageCropActivity extends AppCompatActivity {
         mPhotoCount = intent.getIntExtra(ImageSelectorActivity.PHOTO_COUNT, 1);
         type = intent.getIntExtra(TYPE, CAMERA);
         imageShapeType = initImageShapeType(intent);
-        clipImageView.setImageShapeType(ImageShapeType.ROUND);
+        clipImageView.setImageShapeType(ImageShapeType.ROUND_CORNER);
 
         pickerHelper = new PickerHelper(this);
 
