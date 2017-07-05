@@ -154,18 +154,20 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
             int dw = drawable.getIntrinsicWidth();
             int dh = drawable.getIntrinsicHeight();
             Log.e("info", "==onGlobalLayout==dw===" + dw + ",==dh===" + dh);
-            //图片的宽度大于控价的宽度，且图片的高度小于控价的高度，缩放宽度
-            if (dw > width && dh <= height) {
+            int shapeHeight = mRadius * 2 + borderPadding * 2;
+            //图片的宽度大于控价的宽度，且图片的高度小于控价的高度，放大高度
+            if (dw > width && dh <= shapeHeight) {
+                scale = shapeHeight * scale / dh;
+            }
+            //图片的宽度小于控价的宽度，且图片的高度大于控价的高度，放大宽度
+            if (dw <= width && dh > shapeHeight) {
                 scale = width * scale / dw;
             }
-            //图片的宽度小于控价的宽度，且图片的高度大于控价的高度，缩放宽度
-            if (dw <= width && dh > height) {
-                scale = height * scale / dh;
+            //图片的宽高都小于或者都大于控件的宽高,取最大缩放比例
+            if (dw < width && dh < shapeHeight) {
+                scale = Math.max(width * scale / dw, shapeHeight * scale / dh);
             }
-            //图片的宽高都小于或者都大于控件的宽高,取最小缩放比例
-            if (dw < width && dh < height) {
-                scale = Math.min(width * scale / dw, height * scale / dh);
-            }
+            //图片的宽高都大于控件的宽高,取最小缩放比例
             if (dw > width && dh > height) {
                 scale = Math.min(width * scale / dw, height * scale / dh);
             }
@@ -195,7 +197,6 @@ public class ClipImageView extends ImageView implements ViewTreeObserver.OnGloba
         if (imageShapeType == null || imageShapeType == ImageShapeType.NO_CLIP) {
             return;
         }
-        Log.e("info", "==drawShapeBg==dw===");
         mShapeBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         mShapeCanvas = new Canvas(mShapeBitmap);
         mShapeCanvas.drawRect(mBgRect, mBgPaint);
